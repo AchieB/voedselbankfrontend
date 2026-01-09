@@ -151,76 +151,65 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'LoginPage',
-  data() {
-    return {
-      email: '',
-      password: '',
-      showPassword: false,
-      loading: false,
-      error: ''
-    }
-  },
-  methods: {
-    async login() {
-      if (!this.email || !this.password) {
-        this.error = 'Vul alle velden in om verder te gaan'
-        return
-      }
-      
-      this.loading = true
-      this.error = ''
-      
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      if (this.email === 'demo@voedselbank.nl' && this.password === 'demo123') {
-        this.loginSuccess()
-      } else {
-        this.error = 'Ongeldige inloggegevens. Gebruik de demo gegevens om te testen.'
-      }
-      
-      this.loading = false
-    },
-    
-    loginSuccess() {
+<script setup>
+import { ref } from "vue";
+import { useAuthStore } from "../stores/auth";
+import { useRouter } from "vue-router";
 
-      this.resetForm()
-      
-      this.$emit('login-success', { 
-        email: this.email,
-        timestamp: new Date().toISOString()
-      })
-      if (this.$router) {
-        this.$router.push('/home')
-      } else {
-        window.location.href = '/home'
-      }
-    },
-    
-    forgotPassword() {
-      if (!this.email) {
-        this.error = 'Vul eerst je e-mailadres in'
-        return
-      }
-      alert(`Wachtwoord reset link is verstuurd naar: ${this.email}`)
-    },
-    
-    fillDemo() {
-      this.email = 'demo@voedselbank.nl'
-      this.password = 'demo123'
-      this.error = ''
-    },
-    
-    resetForm() {
-      this.email = ''
-      this.password = ''
-      this.showPassword = false
-    }
+const email = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const loading = ref(false);
+const error = ref("");
+
+const auth = useAuthStore();
+const router = useRouter();
+
+async function login() {
+  // basic check
+  if (!email.value || !password.value) {
+    error.value = "Vul alle velden in om verder te gaan";
+    return;
+  }
+
+  loading.value = true;
+  error.value = "";
+
+  try {
+    // call backend via store
+    await auth.login(email.value, password.value);
+
+    // optional: form reset
+    email.value = "";
+    password.value = "";
+    showPassword.value = false;
+
+    // route after login (pas aan als jij /home gebruikt)
+    router.push("/");
+  } catch (e) {
+    error.value = e?.response?.data?.error || "Login mislukt";
+  } finally {
+    loading.value = false;
   }
 }
+
+// Optioneel: demo-knop laten werken (vult alleen velden in)
+function showDemo() {
+  email.value = "admin@voedselbank.local"; // of demo user als je die hebt
+  password.value = "Admin123!";
+  error.value = "";
+}
+
+// Optioneel: "wachtwoord vergeten" melding
+function forgotPassword() {
+  if (!email.value) {
+    error.value = "Vul eerst je e-mailadres in";
+    return;
+  }
+  alert(`Wachtwoord reset is nog niet gebouwd. Email ingevuld: ${email.value}`);
+}
 </script>
+
 
 <style scoped>
 .login-page {
