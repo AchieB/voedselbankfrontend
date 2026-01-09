@@ -125,8 +125,8 @@
             
             <div class="demo-hint">
               <p><strong>Demo toegang:</strong></p>
-              <p>E-mail: <code>demo@voedselbank.nl</code></p>
-              <p>Wachtwoord: <code>demo123</code></p>
+              <p>E-mail: <code>admin@voedselbank.local</code></p>
+              <p>Wachtwoord: <code>Admin123!</code></p>
               <button 
                 type="button" 
                 @click="showDemo" 
@@ -185,7 +185,7 @@ async function login() {
     showPassword.value = false;
 
     // route after login (pas aan als jij /home gebruikt)
-    router.push("/");
+    router.push("/home");
   } catch (e) {
     error.value = e?.response?.data?.error || "Login mislukt";
   } finally {
