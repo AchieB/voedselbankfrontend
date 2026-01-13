@@ -16,9 +16,9 @@
             <i class="fas fa-utensils"></i>
             <span>Producten</span>
           </router-link>
-          <router-link to="/voorraad" class="nav-link">
-            <i class="fas fa-boxes"></i>
-            <span>Voorraad</span>
+          <router-link to="/klanten" class="nav-link">
+            <i class="fas fa-users"></i>
+            <span>Klanten</span>
           </router-link>
           <router-link to="/bestellingen" class="nav-link">
             <i class="fas fa-shopping-cart"></i>

@@ -124,17 +124,10 @@
             </button>
             
             <div class="demo-hint">
-              <p><strong>Demo toegang:</strong></p>
-              <p>E-mail: <code>admin@voedselbank.local</code></p>
-              <p>Wachtwoord: <code>Admin123!</code></p>
-              <button 
-                type="button" 
-                @click="showDemo" 
-                class="demo-btn"
-              >
-                <i class="fas fa-magic"></i>
-                Vul demo gegevens in
-              </button>
+              <p><strong> Accounts:</strong></p>
+              <p>• admin@voedselbank.local / Admin123!</p>
+              <p>• magazijn@voedselbank.local / Magazijn123!</p>
+              <p>• vrijwilliger@voedselbank.local / Vrijwilliger123!</p>
             </div>
           </form>
           
@@ -166,6 +159,7 @@ const auth = useAuthStore();
 const router = useRouter();
 
 async function login() {
+  // basic check
   if (!email.value || !password.value) {
     error.value = "Vul alle velden in om verder te gaan";
     return;
@@ -175,12 +169,15 @@ async function login() {
   error.value = "";
 
   try {
+    // call backend via store
     await auth.login(email.value, password.value);
 
+    // optional: form reset
     email.value = "";
     password.value = "";
     showPassword.value = false;
 
+    // route after login (pas aan als jij /home gebruikt)
     router.push("/home");
   } catch (e) {
     error.value = e?.response?.data?.error || "Login mislukt";
@@ -189,12 +186,7 @@ async function login() {
   }
 }
 
-function showDemo() {
-  email.value = "admin@voedselbank.local";
-  password.value = "Admin123!";
-  error.value = "";
-}
-
+// Optioneel: "wachtwoord vergeten" melding
 function forgotPassword() {
   if (!email.value) {
     error.value = "Vul eerst je e-mailadres in";

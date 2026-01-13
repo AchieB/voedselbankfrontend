@@ -10,6 +10,13 @@ import Bestellingen from '../components/bestellingen/Bestellingen.vue'
 const routes = [
   {
     path: "/",            
+=======
+import Klanten from "../components/Klanten.vue";
+
+const routes = [
+  {
+    path: "/",           
+>>>>>>> origin/klanten
     name: "Login",
     component: LoginPage
   },
@@ -26,9 +33,10 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: "/klanten-test",
-    name: "KlantenTest",
-    component: KlantenTest,    
+    path: "/klanten",
+    name: "Klanten",
+    component: Klanten,          
+>>>>>>> origin/klanten
     meta: { requiresAuth: true }
   },
 {
