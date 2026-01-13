@@ -6,10 +6,9 @@
 </template>
 
 <script>
-// Verwijder de import en component-registratie voor LoginPage, want router-view handelt dit af
 export default {
   name: 'App'
-  // components: {} // Niet nodig
+  
 }
 </script>
 

@@ -4,12 +4,12 @@ import { useAuthStore } from "../stores/Auth.js";
 import LoginPage from "../components/LoginPage.vue";
 import Homepage from "../components/Homepage.vue";
 import Productencatalogus from "../components/Productencatalogus.vue";
-import KlantenTest from "../components/KlantenTest.vue"; // <-- maak dit component
+import KlantenTest from "../components/KlantenTest.vue"; 
 import Bestellingen from '../components/bestellingen/Bestellingen.vue'
 
 const routes = [
   {
-    path: "/",            // login staat op /
+    path: "/",            
     name: "Login",
     component: LoginPage
   },
@@ -28,7 +28,7 @@ const routes = [
   {
     path: "/klanten-test",
     name: "KlantenTest",
-    component: KlantenTest,          // <-- niet Homepage
+    component: KlantenTest,    
     meta: { requiresAuth: true }
   },
 {
@@ -45,15 +45,9 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  // simpel & betrouwbaar: check localStorage
   const token = localStorage.getItem("token");
-
-  // of via store (kan ook):
-  // const auth = useAuthStore();
-  // const token = auth.token;
-
   if (to.meta.requiresAuth && !token) {
-    return { name: "Login" }; // <-- terug naar /
+    return { name: "Login" }; // 
   }
 });
 

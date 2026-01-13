@@ -1,6 +1,5 @@
 <template>
   <div class="bestellingen-page">
-    <!-- Layout header -->
     <div class="header">
       <div class="header-container">
         <div class="logo">
@@ -33,10 +32,8 @@
       </div>
     </div>
 
-    <!-- Main Content -->
     <main class="main-content">
       <div class="container">
-        <!-- Page Header -->
         <div class="page-header">
           <div class="header-left">
             <h1><i class="fas fa-shopping-cart"></i> Mijn Bestellingen</h1>
@@ -54,9 +51,7 @@
           </div>
         </div>
 
-        <!-- Bestellingen overzicht -->
         <div class="bestellingen-container">
-          <!-- Lege state -->
           <div v-if="bestellingen.length === 0" class="empty-state">
             <div class="empty-icon">
               <i class="fas fa-shopping-cart fa-4x"></i>
@@ -69,9 +64,7 @@
             </button>
           </div>
 
-          <!-- Bestellingen lijst -->
           <div v-else>
-            <!-- Statistieken -->
             <div class="statistics">
               <div class="stat-card">
                 <div class="stat-icon">
@@ -114,7 +107,6 @@
               </div>
             </div>
 
-            <!-- Bestellingen grid -->
             <div class="bestellingen-grid">
               <div v-for="bestelling in bestellingen" :key="bestelling.id" class="bestelling-card">
                 <div class="bestelling-header">
@@ -181,7 +173,6 @@
       </div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-section">
@@ -375,14 +366,12 @@ export default {
     
     exportBestellingen() {
       alert('Bestellingen worden geëxporteerd naar CSV...');
-      // Export logica zou hier komen
     }
   }
 };
 </script>
 
 <style scoped>
-/* Stijlen vergelijkbaar met Productencatalogus */
 .bestellingen-page {
   min-height: 100vh;
   display: flex;
@@ -399,7 +388,6 @@ export default {
   margin: 0 auto;
 }
 
-/* Header stijlen (zelfde als productencatalogus) */
 .header {
   background: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -461,7 +449,6 @@ export default {
   font-size: 1.2rem;
 }
 
-/* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -520,7 +507,6 @@ export default {
   background: #e9ecef;
 }
 
-/* Statistics */
 .statistics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -557,7 +543,6 @@ export default {
   margin: 0;
 }
 
-/* Empty State */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -582,7 +567,6 @@ export default {
   margin: 0 auto 30px;
 }
 
-/* Bestellingen Grid */
 .bestellingen-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -721,7 +705,6 @@ export default {
   gap: 5px;
 }
 
-/* Footer */
 .footer {
   background: #2c3e50;
   color: white;
@@ -822,7 +805,6 @@ export default {
   color: #ff6b35; 
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;

@@ -1,6 +1,5 @@
 <template>
   <div class="product-catalogus">
-    <!-- Header/Navigatie -->
     <header class="header">
       <div class="header-container">
         <div class="logo">
@@ -33,10 +32,8 @@
       </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main-content">
       <div class="container">
-        <!-- Page Header -->
         <div class="page-header">
           <div class="header-left">
             <h1><i class="fas fa-box-open"></i> Producten Catalogus</h1>
@@ -47,7 +44,6 @@
               <i class="fas fa-plus-circle"></i>
               Nieuw Product Toevoegen
             </button>
-            <!-- Bestellingen snelkoppeling -->
             <button class="btn-order" @click="gaNaarBestellingen" v-if="bestellingenAantal > 0">
               <i class="fas fa-shopping-cart"></i>
               Bestellingen ({{ bestellingenAantal }})
@@ -55,7 +51,6 @@
           </div>
         </div>
 
-        <!-- Control Bar -->
         <div class="control-bar">
           <div class="search-bar">
             <i class="fas fa-search"></i>
@@ -97,7 +92,6 @@
           </div>
         </div>
 
-        <!-- Notificatie voor bestelling -->
         <div v-if="bestellingSuccess" class="notification success">
           <i class="fas fa-check-circle"></i>
           <span>{{ bestellingSuccess }}</span>
@@ -106,7 +100,6 @@
           </button>
         </div>
 
-        <!-- Product Grid -->
         <div class="product-grid">
           <div class="product-card" v-for="product in paginatedProducts" :key="product.id">
             <div class="product-header">
@@ -160,7 +153,6 @@
               </div>
               
               <div class="action-buttons">
-                <!-- Bestel knop -->
                 <button 
                   class="action-btn order" 
                   @click="voegToeAanBestelling(product)"
@@ -184,7 +176,6 @@
           </div>
         </div>
 
-        <!-- Bestel Modal -->
         <div v-if="showBestelModal" class="modal-overlay" @click.self="closeBestelModal">
           <div class="modal bestel-modal">
             <div class="modal-header">
@@ -250,8 +241,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Product Form Modal -->
         <div v-if="showProductForm" class="modal-overlay" @click.self="closeProductForm">
           <div class="modal">
             <div class="modal-header">
@@ -381,7 +370,6 @@
           </div>
         </div>
 
-        <!-- Pagination -->
         <div class="pagination">
           <button class="page-btn" :disabled="currentPage === 1" @click="prevPage">
             <i class="fas fa-chevron-left"></i> Vorige
@@ -404,7 +392,6 @@
       </div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-section">
@@ -542,7 +529,6 @@ export default {
     filterProducts() {
       let filtered = [...this.products]
       
-      // Search filter
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase()
         filtered = filtered.filter(product => 
@@ -553,7 +539,6 @@ export default {
         )
       }
       
-      // Category filter
       if (this.categoryFilter) {
         filtered = filtered.filter(product => product.category === this.categoryFilter)
       }
@@ -601,7 +586,6 @@ export default {
     },
 
     voegToeAanBestelling(product) {
-      // Als er genoeg voorraad is, open modal voor aantal
       if (product.quantity > 0) {
         this.selectedProduct = product;
         this.bestelAantal = 1;
@@ -636,13 +620,11 @@ export default {
     bevestigBestelling() {
       if (!this.selectedProduct) return;
 
-      // Verminder de voorraad
       const productIndex = this.products.findIndex(p => p.id === this.selectedProduct.id);
       if (productIndex !== -1) {
         this.products[productIndex].quantity -= this.bestelAantal;
       }
 
-      // Maak bestelling object
       const bestelling = {
         id: Date.now(),
         productId: this.selectedProduct.id,
@@ -654,22 +636,19 @@ export default {
         eenheid: 'stuks',
         datum: new Date().toISOString(),
         status: 'in behandeling',
-        klantId: 1, // Zou uit authenticatie moeten komen
+        klantId: 1, 
         klantNaam: 'Voedselbank Medewerker',
         locatie: this.selectedProduct.location
       };
 
-      // Sla bestelling op in localStorage
       let bestellingen = JSON.parse(localStorage.getItem('bestellingen') || '[]');
       bestellingen.unshift(bestelling);
       localStorage.setItem('bestellingen', JSON.stringify(bestellingen));
 
-      // Sluit modal en toon bevestiging
       this.closeBestelModal();
       this.bestellingSuccess = `${this.bestelAantal}x ${this.selectedProduct.name} toegevoegd aan bestellingen!`;
-      this.filterProducts(); // Refresh de voorraad weergave
+      this.filterProducts(); 
 
-      // Automatisch verwijder de notificatie na 5 seconden
       setTimeout(() => {
         this.bestellingSuccess = '';
       }, 5000);
@@ -770,7 +749,6 @@ export default {
   min-height: 100vh;
 }
 
-/* Header - zelfde als homepage */
 .header {
   background: white;
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
@@ -838,7 +816,6 @@ export default {
   color: #1971c2;
 }
 
-/* Main Content */
 .main-content {
   padding: 30px 20px;
 }
@@ -848,7 +825,6 @@ export default {
   margin: 0 auto;
 }
 
-/* Page Header */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -898,7 +874,6 @@ export default {
   box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
 }
 
-/* Control Bar */
 .control-bar {
   background: white;
   padding: 25px;
@@ -979,7 +954,6 @@ export default {
   border-color: #ff6b35;
 }
 
-/* Product Grid */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -1191,7 +1165,6 @@ export default {
   background: #ffcdd2;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -1334,7 +1307,6 @@ export default {
   background: #e9ecef;
 }
 
-/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -1497,7 +1469,6 @@ export default {
   font-size: 12px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .header-container {
     flex-direction: column;
