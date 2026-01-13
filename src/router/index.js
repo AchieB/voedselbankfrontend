@@ -33,6 +33,8 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+ 
+=======
     path: "/klanten",
     name: "Klanten",
     component: Klanten,          
