@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref } from "vue";
-import api from "../api"; // <-- jouw axios instance
+import api from "../api"; 
 
 const klanten = ref([]);
 const loading = ref(false);

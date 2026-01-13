@@ -4,11 +4,11 @@ import { useAuthStore } from "../stores/Auth.js";
 import LoginPage from "../components/LoginPage.vue";
 import Homepage from "../components/Homepage.vue";
 import Productencatalogus from "../components/Productencatalogus.vue";
-import Klanten from "../components/Klanten.vue"; // <-- maak dit component
+import Klanten from "../components/Klanten.vue";
 
 const routes = [
   {
-    path: "/",            // login staat op /
+    path: "/",           
     name: "Login",
     component: LoginPage
   },
@@ -27,7 +27,7 @@ const routes = [
   {
     path: "/klanten",
     name: "Klanten",
-    component: Klanten,          // <-- niet Homepage
+    component: Klanten,          
     meta: { requiresAuth: true }
   }
 ];
