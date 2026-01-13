@@ -4,7 +4,7 @@ import { useAuthStore } from "../stores/Auth.js";
 import LoginPage from "../components/LoginPage.vue";
 import Homepage from "../components/Homepage.vue";
 import Productencatalogus from "../components/Productencatalogus.vue";
-import KlantenTest from "../components/KlantenTest.vue"; // <-- maak dit component
+import Klanten from "../components/Klanten.vue"; // <-- maak dit component
 
 const routes = [
   {
@@ -25,9 +25,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: "/klanten-test",
-    name: "KlantenTest",
-    component: KlantenTest,          // <-- niet Homepage
+    path: "/klanten",
+    name: "Klanten",
+    component: Klanten,          // <-- niet Homepage
     meta: { requiresAuth: true }
   }
 ];
