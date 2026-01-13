@@ -12,7 +12,7 @@
             <i class="fas fa-home"></i>
             <span>Home</span>
           </router-link>
-          <router-link to="/producten" class="nav-link">
+          <router-link to="/productencatalogus" class="nav-link">
             <i class="fas fa-utensils"></i>
             <span>Producten</span>
           </router-link>
@@ -67,7 +67,7 @@
     <section class="welcome-section">
       <div class="welcome-container">
         <div class="welcome-content">
-          <h2>Welkom bij Voedselbank <span class="city">Amsterdam</span></h2>
+          <h2>Welkom bij Voedselbank</h2>
           <p class="welcome-text">
             Wij helpen mensen in nood met voedselpakketten. Als klant kunt u hier 
             bestellingen plaatsen voor voedselhulp. Onze vrijwilligers staan klaar 

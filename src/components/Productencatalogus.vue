@@ -47,6 +47,11 @@
               <i class="fas fa-plus-circle"></i>
               Nieuw Product Toevoegen
             </button>
+            <!-- Bestellingen snelkoppeling -->
+            <button class="btn-order" @click="gaNaarBestellingen" v-if="bestellingenAantal > 0">
+              <i class="fas fa-shopping-cart"></i>
+              Bestellingen ({{ bestellingenAantal }})
+            </button>
           </div>
         </div>
 
@@ -92,9 +97,18 @@
           </div>
         </div>
 
+        <!-- Notificatie voor bestelling -->
+        <div v-if="bestellingSuccess" class="notification success">
+          <i class="fas fa-check-circle"></i>
+          <span>{{ bestellingSuccess }}</span>
+          <button @click="bestellingSuccess = ''" class="close-notification">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
         <!-- Product Grid -->
         <div class="product-grid">
-          <div class="product-card" v-for="product in filteredProducts" :key="product.id">
+          <div class="product-card" v-for="product in paginatedProducts" :key="product.id">
             <div class="product-header">
               <span class="product-id">ID: {{ product.id }}</span>
               <span class="product-category" :class="product.category">
@@ -121,7 +135,7 @@
                 </div>
                 <div class="detail">
                   <i class="fas fa-calendar-alt"></i>
-                  <span><strong>Houdbaar tot:</strong> {{ product.expiryDate }}</span>
+                  <span><strong>Houdbaar tot:</strong> {{ formatDate(product.expiryDate) }}</span>
                 </div>
               </div>
             </div>
@@ -133,7 +147,10 @@
                 </button>
                 <div class="stock-display">
                   <span class="stock-label">Voorraad:</span>
-                  <span class="stock-count" :class="{ 'low-stock': product.quantity < 10 }">
+                  <span class="stock-count" :class="{ 
+                    'low-stock': product.quantity < 10,
+                    'no-stock': product.quantity === 0
+                  }">
                     {{ product.quantity }} stuks
                   </span>
                 </div>
@@ -143,6 +160,17 @@
               </div>
               
               <div class="action-buttons">
+                <!-- Bestel knop -->
+                <button 
+                  class="action-btn order" 
+                  @click="voegToeAanBestelling(product)"
+                  :disabled="product.quantity === 0"
+                  :class="{ 'disabled': product.quantity === 0 }"
+                >
+                  <i class="fas fa-cart-plus"></i>
+                  Bestel
+                </button>
+                
                 <button class="action-btn edit" @click="editProduct(product)">
                   <i class="fas fa-edit"></i>
                   Bewerken
@@ -151,6 +179,73 @@
                   <i class="fas fa-trash"></i>
                   Verwijderen
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bestel Modal -->
+        <div v-if="showBestelModal" class="modal-overlay" @click.self="closeBestelModal">
+          <div class="modal bestel-modal">
+            <div class="modal-header">
+              <h2><i class="fas fa-cart-plus"></i> Product Bestellen</h2>
+              <button class="close-btn" @click="closeBestelModal">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div class="bestel-content" v-if="selectedProduct">
+              <div class="bestel-product">
+                <div class="bestel-image">
+                  <i :class="getCategoryIcon(selectedProduct.category)"></i>
+                </div>
+                <div class="bestel-info">
+                  <h3>{{ selectedProduct.name }}</h3>
+                  <p class="product-description">{{ selectedProduct.description }}</p>
+                  <div class="product-details">
+                    <div class="detail">
+                      <i class="fas fa-box"></i>
+                      <span>Beschikbaar: {{ selectedProduct.quantity }} stuks</span>
+                    </div>
+                    <div class="detail">
+                      <i class="fas fa-barcode"></i>
+                      <span>EAN: {{ selectedProduct.ean }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="bestel-controls">
+                <div class="quantity-control">
+                  <label for="aantal">Aantal:</label>
+                  <div class="quantity-input">
+                    <button class="qty-btn minus" @click="decreaseAantal" :disabled="bestelAantal <= 1">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                    <input 
+                      type="number" 
+                      id="aantal" 
+                      v-model="bestelAantal" 
+                      min="1" 
+                      :max="selectedProduct.quantity"
+                      @change="validateAantal"
+                    >
+                    <button class="qty-btn plus" @click="increaseAantal" :disabled="bestelAantal >= selectedProduct.quantity">
+                      <i class="fas fa-plus"></i>
+                    </button>
+                  </div>
+                  <span class="max-aantal">Max: {{ selectedProduct.quantity }} stuks</span>
+                </div>
+                
+                <div class="bestel-actions">
+                  <button class="btn-secondary" @click="closeBestelModal">
+                    Annuleren
+                  </button>
+                  <button class="btn-primary" @click="bevestigBestelling">
+                    <i class="fas fa-shopping-cart"></i>
+                    Toevoegen aan Bestelling
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -323,17 +418,6 @@
         </div>
         
         <div class="footer-section">
-          <h4>SCRUM Requirements</h4>
-          <ul class="scrum-list">
-            <li><i class="fas fa-check-circle"></i> SCRUM-25: Productformulier</li>
-            <li><i class="fas fa-check-circle"></i> SCRUM-26: Voorraad beheer</li>
-            <li><i class="fas fa-check-circle"></i> SCRUM-27: Zoekveld & Filter</li>
-            <li><i class="fas fa-check-circle"></i> SCRUM-28: Sorteren</li>
-            <li><i class="fas fa-check-circle"></i> SCRUM-29: EAN Filter</li>
-          </ul>
-        </div>
-        
-        <div class="footer-section">
           <h4>Snelle Acties</h4>
           <div class="quick-actions">
             <button class="quick-btn" @click="openProductForm">
@@ -342,8 +426,8 @@
             <button class="quick-btn" @click="exportProducts">
               <i class="fas fa-download"></i> Exporteer
             </button>
-            <button class="quick-btn" @click="printCatalog">
-              <i class="fas fa-print"></i> Print Catalogus
+            <button class="quick-btn" @click="gaNaarBestellingen" v-if="bestellingenAantal > 0">
+              <i class="fas fa-shopping-cart"></i> Bestellingen ({{ bestellingenAantal }})
             </button>
           </div>
         </div>
@@ -362,7 +446,6 @@ export default {
   name: 'ProductCatalogus',
   data() {
     return {
-      // Mock data - in echte app komt dit van backend
       products: [
         { id: 1, name: 'Biologische Appels', category: 'fruit', ean: '8712345678901', quantity: 45, description: 'Verse biologische appels van lokale boer', location: 'Koeling A-1', expiryDate: '2024-02-15' },
         { id: 2, name: 'Volkoren Brood', category: 'brood', ean: '8712345678902', quantity: 32, description: 'Vers volkoren brood van bakkerij', location: 'Rek B-3', expiryDate: '2024-01-12' },
@@ -382,7 +465,11 @@ export default {
       categoryFilter: '',
       filteredProducts: [],
       showProductForm: false,
+      showBestelModal: false,
       editingProduct: null,
+      selectedProduct: null,
+      bestelAantal: 1,
+      bestellingSuccess: '',
       productForm: {
         name: '',
         category: '',
@@ -407,6 +494,10 @@ export default {
       const start = (this.currentPage - 1) * this.itemsPerPage
       const end = start + this.itemsPerPage
       return this.filteredProducts.slice(start, end)
+    },
+    bestellingenAantal() {
+      const bestellingen = JSON.parse(localStorage.getItem('bestellingen') || '[]');
+      return bestellingen.length;
     }
   },
   created() {
@@ -441,6 +532,12 @@ export default {
       }
       return labels[category] || category
     },
+
+    formatDate(dateString) {
+      if (!dateString) return 'Niet gespecificeerd';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('nl-NL');
+    },
     
     filterProducts() {
       let filtered = [...this.products]
@@ -462,7 +559,7 @@ export default {
       }
       
       this.filteredProducts = filtered
-      this.currentPage = 1 // Reset naar eerste pagina bij nieuwe filter
+      this.currentPage = 1
       this.sortProducts()
     },
     
@@ -491,7 +588,7 @@ export default {
       const product = this.products.find(p => p.id === productId)
       if (product) {
         product.quantity++
-        this.filterProducts() // Refresh filtered list
+        this.filterProducts()
       }
     },
     
@@ -499,17 +596,100 @@ export default {
       const product = this.products.find(p => p.id === productId)
       if (product && product.quantity > 0) {
         product.quantity--
-        this.filterProducts() // Refresh filtered list
+        this.filterProducts()
       }
+    },
+
+    voegToeAanBestelling(product) {
+      // Als er genoeg voorraad is, open modal voor aantal
+      if (product.quantity > 0) {
+        this.selectedProduct = product;
+        this.bestelAantal = 1;
+        this.showBestelModal = true;
+      } else {
+        alert('Dit product is niet op voorraad!');
+      }
+    },
+
+    increaseAantal() {
+      if (this.selectedProduct && this.bestelAantal < this.selectedProduct.quantity) {
+        this.bestelAantal++;
+      }
+    },
+
+    decreaseAantal() {
+      if (this.bestelAantal > 1) {
+        this.bestelAantal--;
+      }
+    },
+
+    validateAantal() {
+      if (!this.selectedProduct) return;
+      
+      if (this.bestelAantal < 1) {
+        this.bestelAantal = 1;
+      } else if (this.bestelAantal > this.selectedProduct.quantity) {
+        this.bestelAantal = this.selectedProduct.quantity;
+      }
+    },
+
+    bevestigBestelling() {
+      if (!this.selectedProduct) return;
+
+      // Verminder de voorraad
+      const productIndex = this.products.findIndex(p => p.id === this.selectedProduct.id);
+      if (productIndex !== -1) {
+        this.products[productIndex].quantity -= this.bestelAantal;
+      }
+
+      // Maak bestelling object
+      const bestelling = {
+        id: Date.now(),
+        productId: this.selectedProduct.id,
+        naam: this.selectedProduct.name,
+        categorie: this.selectedProduct.category,
+        beschrijving: this.selectedProduct.description,
+        ean: this.selectedProduct.ean,
+        aantal: this.bestelAantal,
+        eenheid: 'stuks',
+        datum: new Date().toISOString(),
+        status: 'in behandeling',
+        klantId: 1, // Zou uit authenticatie moeten komen
+        klantNaam: 'Voedselbank Medewerker',
+        locatie: this.selectedProduct.location
+      };
+
+      // Sla bestelling op in localStorage
+      let bestellingen = JSON.parse(localStorage.getItem('bestellingen') || '[]');
+      bestellingen.unshift(bestelling);
+      localStorage.setItem('bestellingen', JSON.stringify(bestellingen));
+
+      // Sluit modal en toon bevestiging
+      this.closeBestelModal();
+      this.bestellingSuccess = `${this.bestelAantal}x ${this.selectedProduct.name} toegevoegd aan bestellingen!`;
+      this.filterProducts(); // Refresh de voorraad weergave
+
+      // Automatisch verwijder de notificatie na 5 seconden
+      setTimeout(() => {
+        this.bestellingSuccess = '';
+      }, 5000);
+    },
+
+    closeBestelModal() {
+      this.showBestelModal = false;
+      this.selectedProduct = null;
+      this.bestelAantal = 1;
+    },
+
+    gaNaarBestellingen() {
+      this.$router.push('/bestellingen');
     },
     
     openProductForm(product = null) {
       this.editingProduct = product
       if (product) {
-        // Vul formulier met bestaand product
         this.productForm = { ...product }
       } else {
-        // Reset formulier voor nieuw product
         this.productForm = {
           name: '',
           category: '',
@@ -530,13 +710,11 @@ export default {
     
     saveProduct() {
       if (this.editingProduct) {
-        // Update bestaand product
         const index = this.products.findIndex(p => p.id === this.editingProduct.id)
         if (index !== -1) {
           this.products[index] = { ...this.productForm, id: this.editingProduct.id }
         }
       } else {
-        // Voeg nieuw product toe
         const newId = Math.max(...this.products.map(p => p.id)) + 1
         this.products.push({ ...this.productForm, id: newId })
       }
@@ -560,7 +738,6 @@ export default {
     
     exportProducts() {
       alert('Producten worden geëxporteerd naar CSV...')
-      // Hier zou export logica komen
     },
     
     printCatalog() {
@@ -586,7 +763,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<<style scoped>
 .product-catalogus {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: #f8f9fa;

@@ -5,6 +5,7 @@ import LoginPage from "../components/LoginPage.vue";
 import Homepage from "../components/Homepage.vue";
 import Productencatalogus from "../components/Productencatalogus.vue";
 import KlantenTest from "../components/KlantenTest.vue"; // <-- maak dit component
+import Bestellingen from '../components/bestellingen/Bestellingen.vue'
 
 const routes = [
   {
@@ -29,7 +30,13 @@ const routes = [
     name: "KlantenTest",
     component: KlantenTest,          // <-- niet Homepage
     meta: { requiresAuth: true }
-  }
+  },
+{
+    path: '/bestellingen',
+    name: 'Bestellingen',
+    component: Bestellingen,
+    meta: { requiresAuth: true }
+  },
 ];
 
 const router = createRouter({
